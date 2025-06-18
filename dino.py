@@ -17,33 +17,38 @@ try:
 except Exception as e:
     print("⚠️ Could not set window always on top:", e)
 mp_hands = mp.solutions.hands
-hands = mp_hands.Hands(static_image_mode=False,
-                       max_num_hands=1,
-                       min_detection_confidence=0.7,
-                       min_tracking_confidence=0.6)
+hands = mp_hands.Hands(
+    static_image_mode=False,
+    max_num_hands=1,
+    min_detection_confidence=0.7,
+    min_tracking_confidence=0.6
+)
 mp_draw = mp.solutions.drawing_utils
 cap = cv2.VideoCapture(0)
+hand_was_closed = False
 last_press_time = 0
 cooldown = 0.5  
 while cap.isOpened():
     success, img = cap.read()
     if not success:
         break
-
-    img = cv2.flip(img, 1) 
+    img = cv2.flip(img, 1)
     img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     results = hands.process(img_rgb)
-
+    current_time = time.time()
     if results.multi_hand_landmarks:
         for hand_landmarks in results.multi_hand_landmarks:
             mp_draw.draw_landmarks(img, hand_landmarks, mp_hands.HAND_CONNECTIONS)
             tip_y = hand_landmarks.landmark[8].y
             base_y = hand_landmarks.landmark[6].y
-            if tip_y > base_y and (time.time() - last_press_time > cooldown):
-                pyautogui.click(x=600, y=300)  
-                pyautogui.press('space') 
+            hand_closed = tip_y > base_y
+            if hand_closed and not hand_was_closed and (current_time - last_press_time > cooldown):
+                pyautogui.press('space')
                 print("🕹️ Jump triggered!")
-                last_press_time = time.time()
+                last_press_time = current_time
+            hand_was_closed = hand_closed
+    else:
+        hand_was_closed = False
     cv2.imshow("Hand Gesture Control", img)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
