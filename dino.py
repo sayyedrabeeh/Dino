@@ -7,7 +7,7 @@ import win32gui
 import win32con
 import numpy as np 
 
-cv2.namedWindow("Hand Gesture Control")
+cv2.namedWindow("Hand Gesture Control", cv2.WINDOW_NORMAL)  
 dummy_frame = 255 * np.ones((100, 100, 3), dtype=np.uint8)
 cv2.imshow("Hand Gesture Control", dummy_frame)
 cv2.waitKey(1)
