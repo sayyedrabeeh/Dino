@@ -1,5 +1,5 @@
 # Dino hand gesture
-![Demo](hand_gesture_demo.png)
+![Demo](hand_gesture_demo.jpg)
 
 # 🖐️ Hand Gesture Control for Spacebar Press
 
